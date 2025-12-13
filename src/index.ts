@@ -386,7 +386,7 @@ ponder.on("BRNDSEASON1:WalletAuthorized", async ({ event, context }) => {
   const { fid, wallet } = event.args;
   const { block, transaction } = event;
 
-  const authId = `${transaction.hash}-${event.log.logIndex}`;
+  const authId = `${transaction.hash}`;
 
   await context.db.insert(walletAuthorizations).values({
     id: authId,
@@ -405,7 +405,7 @@ ponder.on("BRNDSEASON1:RewardClaimed", async ({ event, context }) => {
   // Calculate day number from block timestamp (consistent and repeatable)
   const day = calculateDayNumber(block.timestamp);
 
-  const claimId = `${transaction.hash}-${event.log.logIndex}`;
+  const claimId = `${transaction.hash}`;
 
   await context.db.insert(rewardClaims).values({
     id: claimId,
@@ -455,7 +455,7 @@ ponder.on("BRNDSEASON1:BrandRewardWithdrawn", async ({ event, context }) => {
   const { brandId, fid, amount } = event.args;
   const { block, transaction } = event;
 
-  const withdrawalId = `${transaction.hash}-${event.log.logIndex}`;
+  const withdrawalId = `${transaction.hash}`;
 
   await context.db.insert(brandRewardWithdrawals).values({
     id: withdrawalId,
@@ -472,7 +472,7 @@ ponder.on("BRNDSEASON1:BrndPowerLevelUp", async ({ event, context }) => {
   const { fid, newLevel, wallet } = event.args;
   const { block, transaction } = event;
 
-  const levelUpId = `${transaction.hash}-${event.log.logIndex}`;
+  const levelUpId = `${transaction.hash}`;
 
   await context.db.insert(brndPowerLevelUps).values({
     id: levelUpId,
