@@ -17,6 +17,7 @@ import {
 
 const sendVoteToBackend = async (voteData: any) => {
   try {
+    console.log("sending vote to backend", voteData);
     const apiKey = process.env.INDEXER_API_KEY;
     const baseUrl =
       process.env.BACKEND_API_BASE_URL || "https://poiesis.anky.app";
@@ -35,6 +36,7 @@ const sendVoteToBackend = async (voteData: any) => {
       },
       body: JSON.stringify(voteData),
     });
+    console.log("response", response);
 
     if (!response.ok) {
       console.error(
@@ -235,7 +237,7 @@ ponder.on("BRNDSEASON1:PodiumCreated", async ({ event, context }) => {
     transactionHash: transaction.hash,
     timestamp: block.timestamp.toString(),
   };
-
+  console.log("a new vote was cast, sending to backend", voteData);
   await sendVoteToBackend(voteData);
 
   // Use upsert pattern with onConflictDoUpdate
