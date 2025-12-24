@@ -343,6 +343,7 @@ ponder.on("BRNDSEASON1:BrandCreated", async ({ event, context }) => {
     blockNumber: block.number.toString(),
     transactionHash: transaction.hash,
     timestamp: block.timestamp.toString(),
+    createdOrUpdated: "created",
   };
   console.log("a new brand was created", brandData);
   await sendBrandToBackend(brandData);
@@ -905,6 +906,9 @@ ponder.on("BRNDSEASON1:BrandUpdated", async ({ event, context }) => {
   const { brandId, newMetadataHash, newFid, newWalletAddress } = event.args;
   const { block, transaction } = event;
 
+  // Fetch the brand to get handle and createdAt before updating
+  const existingBrand = await context.db.find(brands, { id: Number(brandId) });
+
   await context.db.update(brands, { id: Number(brandId) }).set({
     metadataHash: newMetadataHash,
     fid: Number(newFid),
@@ -912,4 +916,21 @@ ponder.on("BRNDSEASON1:BrandUpdated", async ({ event, context }) => {
     blockNumber: block.number,
     transactionHash: transaction.hash,
   });
+
+  // Send updated brand data to backend (same format as BrandCreated)
+  if (existingBrand) {
+    const brandData = {
+      id: Number(brandId),
+      fid: Number(newFid),
+      walletAddress: newWalletAddress.toLowerCase(),
+      handle: existingBrand.handle,
+      createdAt: existingBrand.createdAt.toString(),
+      blockNumber: block.number.toString(),
+      transactionHash: transaction.hash,
+      timestamp: block.timestamp.toString(),
+      createdOrUpdated: "updated",
+    };
+    console.log("a brand was updated", brandData);
+    await sendBrandToBackend(brandData);
+  }
 });
